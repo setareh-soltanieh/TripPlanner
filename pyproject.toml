@@ -3,7 +3,7 @@ name = "tripplanner"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
     "airportsdata>=20250909",
     "dotenv>=0.9.9",
@@ -17,4 +17,6 @@ dependencies = [
     "fastapi>=0.128.8",
     "uvicorn>=0.39.0",
     "jinja2>=3.1.6",
+    "langchain-mcp-adapters>=0.3.1",
+    "mcp<2.0.0",
 ]

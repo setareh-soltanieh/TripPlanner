@@ -12,6 +12,10 @@ from pydantic import BaseModel
 
 from backend import run_travel_agent
 
+# This allow nested evebt loops for async calls in FastAPI
+import nest_asyncio
+nest_asyncio.apply()
+
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI(

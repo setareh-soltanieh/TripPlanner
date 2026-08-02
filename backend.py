@@ -152,42 +152,50 @@ def flight_agent(state: TravelState):
 
 def hotel_agent(state: TravelState):
     query = f"Best hotels for {state['user_query']}"
-    # hotel_results = tavily_search(query)
-    hotel_results = asyncio.run(tavily_mcp_search(query))
+
+    try:
+        hotel_results = asyncio.run(tavily_mcp_search(query))
+    except Exception as e:
+        hotel_results = f"Hotel information unavailable: {str(e)}"
 
     return {
-        "hotel_results": hotel_results, 
+        "hotel_results": hotel_results,
         "messages": [
             AIMessage(content="Hotel information fetched.")
-        ], 
+        ],
         "llm_calls": state.get("llm_calls", 0) + 1
     }
 
 def weather_agent(state: TravelState):
 
-    city = extract_desctination(state["user_query"])
+    try:
+        city = extract_desctination(state["user_query"])
 
-    weather_data = asyncio.run(
-        weather_mcp_search(city)
-    )
+        weather_data = asyncio.run(
+            weather_mcp_search(city)
+        )
 
-    forecast_data = asyncio.run(
-        forecast_mcp_search(city)
-    )
+        forecast_data = asyncio.run(
+            forecast_mcp_search(city)
+        )
 
-    return {
-        "weather_results": f"""
-        Current_weather: 
+        weather_results = f"""
+        Current_weather:
         {weather_data}
 
-        Forecast: 
+        Forecast:
         {forecast_data}
-        """, 
+        """
+    except Exception as e:
+        weather_results = f"Weather information unavailable: {str(e)}"
+
+    return {
+        "weather_results": weather_results,
         "messages": [
             AIMessage(
                 content="Weather information fetched"
             )
-        ] 
+        ]
     }
 
 def itinerary_agent(state: TravelState):

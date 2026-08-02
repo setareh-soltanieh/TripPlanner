@@ -52,14 +52,24 @@ client = MultiServerMCPClient(
     }
 )
 
+_all_tools_cache = None
+_all_tools_lock = asyncio.Lock()
+
 async def get_all_tools():
-    tools = await client.get_tools()
-    print("\nAvailable MCP Tools:\n")
+    global _all_tools_cache
 
-    for tool in tools:
-        print(tool.name)
+    async with _all_tools_lock:
+        if _all_tools_cache is not None:
+            return _all_tools_cache
 
-    return tools
+        tools = await client.get_tools()
+        print("\nAvailable MCP Tools:\n")
+
+        for tool in tools:
+            print(tool.name)
+
+        _all_tools_cache = tools
+        return tools
 
 search_tool = None
 aviation_tools = {}
@@ -68,18 +78,14 @@ async def initialize_mcp():
     global search_tool
     global aviation_tools
 
-    if search_tool is not None and aviation_tools: 
-        return 
+    if search_tool is not None and aviation_tools:
+        return
 
     tools = await get_all_tools()
-    print("\nAvailable MCP Tools:\n")
-    
-    for tool in tools:
-        print(tool.name)
 
     search_tool = next(
-        tool 
-        for tool in tools 
+        tool
+        for tool in tools
         if tool.name == "tavily_search"
     )
 
@@ -88,7 +94,7 @@ async def initialize_mcp():
         for tool in tools
         if tool.name != "tavily_search"
     }
-    
+
 async def tavily_mcp_search(query: str):
     await initialize_mcp()
     result = await search_tool.ainvoke(
@@ -99,10 +105,10 @@ async def tavily_mcp_search(query: str):
     return result
 
 async def aviation_mcp_call(
-        tool_name: str, 
+        tool_name: str,
         tool_args: dict = None
 ):
-    tools = await client.get_tools()
+    tools = await get_all_tools()
 
     tool = next(
         t for t in tools
@@ -122,10 +128,10 @@ async def initialize_weather_tools():
 
     global weather_tool, forecast_tool
 
-    if weather_tool is not None: 
-        return 
+    if weather_tool is not None:
+        return
 
-    tools = await client.get_tools()
+    tools = await get_all_tools()
 
     weather_tool = next(
         t for t in tools

@@ -2,6 +2,8 @@
 
 A multi-agent AI travel planner that generates complete trip itineraries — flights, hotels, and a day-by-day plan — from a single natural language request.
 
+**Live demo:** deployed on Render — try it at [tripplanner-qkui.onrender.com](https://tripplanner-qkui.onrender.com/)
+
 ## How it works
 
 A [LangGraph](https://www.langchain.com/langgraph) state graph coordinates five agents in sequence:
